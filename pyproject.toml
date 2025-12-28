@@ -10,7 +10,7 @@ readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.10"
 authors = [
-    {name = "yschang"}
+    {name = "blueskylineassets"}
 ]
 keywords = ["mcp", "far", "federal-acquisition-regulations", "government-contracting", "ai-agent"]
 classifiers = [
@@ -29,8 +29,8 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/yschang/far-mcp-server"
-Repository = "https://github.com/yschang/far-mcp-server"
+Homepage = "https://github.com/blueskylineassets/far-mcp-server"
+Repository = "https://github.com/blueskylineassets/far-mcp-server"
 "RapidAPI" = "https://rapidapi.com/yschang/api/far-rag-federal-acquisition-regulation-search"
 
 [project.scripts]
