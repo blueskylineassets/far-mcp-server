@@ -1,25 +1,23 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
-  "name": "io.github.blueskylineassets/far-oracle",
-  "description": "Search Federal Acquisition Regulations (FAR) for compliance rules, contract clauses, and procurement requirements. Essential for government contracting.",
-  "repository": {
-    "url": "https://github.com/blueskylineassets/far-mcp-server",
-    "source": "https://github.com/blueskylineassets/far-mcp-server"
-  },
-  "version_detail": {
-    "version": "1.0.0"
-  },
+  "name": "io.github.blueskylineassets/far-mcp-server",
+  "title": "FAR Oracle",
+  "description": "Search Federal Acquisition Regulations (FAR) for government contracting.",
+  "version": "1.0.1",
   "packages": [
     {
-      "registry_name": "pip",
-      "name": "far-oracle",
-      "version": "1.0.0"
+      "registryType": "pypi",
+      "identifier": "far-oracle",
+      "version": "1.0.1",
+      "transport": {
+        "type": "stdio"
+      }
     }
   ],
   "tools": [
     {
       "name": "consult_federal_regulations",
-      "description": "Search FAR for compliance rules, contract clauses, and procurement requirements"
+      "description": "Search FAR for compliance rules and contract clauses"
     }
   ],
   "remotes": []
