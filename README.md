@@ -69,6 +69,56 @@ Once configured, ask Claude Desktop questions like:
 - "Explain small business set-aside rules"
 - "What contract clauses apply to data rights?"
 
+## Compliance Logging for Government Contractors
+
+Government contractors using FAR data must often maintain audit trails. [Agent Observability](https://pypi.org/project/agent-observability/) provides automatic logging:
+
+### Quick Setup
+
+```bash
+# Get free API key (100K logs/month)
+curl -X POST https://api-production-0c55.up.railway.app/v1/register \
+  -H "Content-Type: application/json" \
+  -d '{"agent_id":"my-org"}'
+
+# Install
+pip install agent-observability
+
+# Set key
+export AGENT_OBS_API_KEY=ao_live_...
+```
+
+### Log FAR Searches
+
+```python
+from agent_observability import AgentLogger
+
+logger = AgentLogger()
+
+# After each FAR search via Claude
+logger.log(
+    event_type="far_search",
+    metadata={
+        "query": "DFARS cybersecurity requirements",
+        "source": "claude-mcp",
+        "contract_context": "DoD proposal"
+    }
+)
+```
+
+### Benefits for Contractors
+
+| Requirement | How Agent Observability Helps |
+|-------------|------------------------------|
+| DFARS 252.204-7012 | Audit trail of compliance research |
+| SOC 2 Type II | Demonstrate security due diligence |
+| ISO 27001 | Logging for ISMS requirements |
+| Internal Audits | Query historical research patterns |
+
+**Pricing**: 100K logs/month free, then $0.0001/log
+
+Learn more: [Agent Observability Docs](https://api-production-0c55.up.railway.app/docs)
+
 ## Pricing
 
 See RapidAPI for pricing tiers:
