@@ -41,20 +41,30 @@ async def consult_federal_regulations(query: str, top_k: int = 5) -> str:
     Returns:
         JSON string with relevant FAR clauses, or error message if quota exceeded
     """
-    # Get API key from environment
-    api_key = os.getenv("RAPIDAPI_KEY")
-    
-    if not api_key:
-        return (
-            "Error: RAPIDAPI_KEY not configured. "
-            "Get your key at: https://rapidapi.com/yschang/api/far-rag"
+    # Check for direct A2A API key first (preferred)
+    far_api_key = os.getenv("FAR_API_KEY")
+    if far_api_key:
+        return await query_far_backend(
+            query=query,
+            api_key=far_api_key,
+            top_k=top_k,
+            use_rapidapi=False
         )
     
-    # Query the FAR backend and return result directly
-    return await query_far_backend(
-        query=query,
-        api_key=api_key,
-        top_k=top_k
+    # Fall back to RapidAPI key
+    rapidapi_key = os.getenv("RAPIDAPI_KEY")
+    if rapidapi_key:
+        return await query_far_backend(
+            query=query,
+            api_key=rapidapi_key,
+            top_k=top_k,
+            use_rapidapi=True
+        )
+    
+    return (
+        "Error: No API key configured. Set either:\n"
+        "- FAR_API_KEY: Register at https://far-rag-api-production.up.railway.app/v1/register\n"
+        "- RAPIDAPI_KEY: Get key at https://rapidapi.com/yschang/api/far-rag"
     )
 
 
