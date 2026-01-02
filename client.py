@@ -11,7 +11,9 @@ so AI agents can understand and communicate limits to users.
 
 import os
 import json
+import socket
 import httpx
+from pathlib import Path
 
 # Direct API configuration (preferred for A2A commerce)
 FAR_API_URL = os.getenv("FAR_API_URL", "https://far-rag-api-production.up.railway.app")
@@ -25,6 +27,80 @@ RAPIDAPI_BASE_URL = f"https://{RAPIDAPI_HOST}"
 
 # Default timeout for API requests (seconds)
 DEFAULT_TIMEOUT = 30.0
+
+# Auto-registration cache
+_API_KEY_FILE = Path.home() / ".far-oracle" / "api_key"
+_CACHED_API_KEY: str | None = None
+
+
+def _load_cached_api_key() -> str | None:
+    """Load API key from disk cache."""
+    global _CACHED_API_KEY
+    if _CACHED_API_KEY:
+        return _CACHED_API_KEY
+    if _API_KEY_FILE.exists():
+        try:
+            _CACHED_API_KEY = _API_KEY_FILE.read_text().strip()
+            return _CACHED_API_KEY
+        except Exception:
+            pass
+    return None
+
+
+def _save_api_key(api_key: str) -> None:
+    """Save API key to disk cache."""
+    global _CACHED_API_KEY
+    try:
+        _API_KEY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        _API_KEY_FILE.write_text(api_key)
+        _API_KEY_FILE.chmod(0o600)  # Secure permissions
+        _CACHED_API_KEY = api_key
+    except Exception:
+        pass
+
+
+async def _auto_register(retry_count: int = 0) -> str | None:
+    """Auto-register to get an API key on first use."""
+    if retry_count > 2:
+        return None  # Give up after 3 attempts
+    
+    import uuid
+    hostname = socket.gethostname()
+    suffix = uuid.uuid4().hex[:8]
+    agent_id = f"far-oracle-{hostname}-{suffix}"
+    
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(
+                f"{FAR_API_URL}/v1/register",
+                json={
+                    "agent_id": agent_id,
+                    "auto_registered": True,
+                    "registration_source": "far-oracle"
+                }
+            )
+            
+            if response.status_code in (200, 201):
+                data = response.json()
+                api_key = data.get("api_key")
+                if api_key and not api_key.endswith("...(stored)"):
+                    _save_api_key(api_key)
+                    limits = data.get("limits", {})
+                    print("=" * 60)
+                    print("✅ FAR Oracle - Auto-registered!")
+                    print("=" * 60)
+                    print(f"📋 Your API key: {api_key[:25]}...")
+                    print(f"📊 Free tier: {limits.get('queries_per_month', 500)} queries/month")
+                    print(f"💾 Save: export FAR_API_KEY={api_key}")
+                    print("=" * 60)
+                    return api_key
+            elif response.status_code == 409:
+                # Agent ID collision (rare with UUID suffix), retry
+                return await _auto_register(retry_count=retry_count + 1)
+    except Exception:
+        pass
+    
+    return None
 
 
 async def query_far_backend(

@@ -61,10 +61,33 @@ async def consult_federal_regulations(query: str, top_k: int = 5) -> str:
             use_rapidapi=True
         )
     
+    # Try auto-registration (like far-search-tool does)
+    from client import _load_cached_api_key, _auto_register
+    
+    cached_key = _load_cached_api_key()
+    if cached_key:
+        return await query_far_backend(
+            query=query,
+            api_key=cached_key,
+            top_k=top_k,
+            use_rapidapi=False
+        )
+    
+    # Auto-register on first use
+    new_key = await _auto_register()
+    if new_key:
+        return await query_far_backend(
+            query=query,
+            api_key=new_key,
+            top_k=top_k,
+            use_rapidapi=False
+        )
+    
     return (
-        "Error: No API key configured. Set either:\n"
-        "- FAR_API_KEY: Register at https://far-rag-api-production.up.railway.app/v1/register\n"
-        "- RAPIDAPI_KEY: Get key at https://rapidapi.com/yschang/api/far-rag"
+        "Error: Auto-registration failed. Please set FAR_API_KEY:\n"
+        "1. Register: curl -X POST https://far-rag-api-production.up.railway.app/v1/register -H 'Content-Type: application/json' -d '{\"agent_id\": \"my-agent\"}'\n"
+        "2. Set: export FAR_API_KEY=far_live_...\n"
+        "Or get a RapidAPI key: https://rapidapi.com/yschang/api/far-rag"
     )
 
 

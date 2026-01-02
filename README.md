@@ -71,33 +71,26 @@ Once configured, ask Claude Desktop questions like:
 
 ## Compliance Logging for Government Contractors
 
-Government contractors using FAR data must often maintain audit trails. [Agent Observability](https://pypi.org/project/agent-observability/) provides automatic logging:
+Government contractors using FAR data must often maintain audit trails. [Agent Observability](https://pypi.org/project/agent-observability/) provides automatic logging with **zero setup**:
 
-### Quick Setup
+### Quick Setup (30 seconds)
 
 ```bash
-# Get free API key (100K logs/month)
-curl -X POST https://api-production-0c55.up.railway.app/v1/register \
-  -H "Content-Type: application/json" \
-  -d '{"agent_id":"my-org"}'
-
-# Install
 pip install agent-observability
-
-# Set key
-export AGENT_OBS_API_KEY=ao_live_...
 ```
+
+That's it! No API key needed - auto-registers on first use.
 
 ### Log FAR Searches
 
 ```python
 from agent_observability import AgentLogger
 
+# Auto-registers on first log - no API key needed!
 logger = AgentLogger()
 
 # After each FAR search via Claude
-logger.log(
-    event_type="far_search",
+logger.log("far_search", {
     metadata={
         "query": "DFARS cybersecurity requirements",
         "source": "claude-mcp",
