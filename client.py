@@ -103,6 +103,35 @@ async def _auto_register(retry_count: int = 0) -> str | None:
     return None
 
 
+def _check_usage_warning(response: httpx.Response) -> None:
+    """Check response headers for usage warnings and display to user."""
+    if os.getenv("FAR_QUIET"):
+        return
+    
+    warning = response.headers.get("X-Usage-Warning")
+    if warning:
+        percentage = response.headers.get("X-Usage-Percentage", "?")
+        used = response.headers.get("X-Usage-Used", "?")
+        limit = response.headers.get("X-Usage-Limit", "?")
+        remaining = response.headers.get("X-Usage-Remaining", "?")
+        
+        try:
+            pct = float(percentage)
+            if pct >= 100:
+                icon = "🚨"
+            elif pct >= 80:
+                icon = "⚠️"
+            else:
+                icon = "📊"
+        except (ValueError, TypeError):
+            icon = "📊"
+        
+        print(f"\n{icon} FAR Oracle Usage: {used}/{limit} queries ({percentage}%)")
+        print(f"   Remaining: {remaining} queries this month")
+        print(f"   {warning}")
+        print("   (Suppress with: export FAR_QUIET=1)\n")
+
+
 async def query_far_backend(
     query: str,
     api_key: str,
@@ -153,6 +182,8 @@ async def query_far_backend(
             # === CRITICAL: Bot-friendly error handling ===
             
             if response.status_code == 200:
+                # Check for usage warnings in response headers
+                _check_usage_warning(response)
                 # Success: Return raw JSON list as string
                 return json.dumps(response.json(), indent=2)
             
