@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "far-oracle"
-version = "1.0.6"
+version = "1.0.7"
 description = "MCP Server for Federal Acquisition Regulations (FAR) search"
 readme = "README.md"
 license = {text = "MIT"}

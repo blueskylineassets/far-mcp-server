@@ -91,6 +91,11 @@ async def consult_federal_regulations(query: str, top_k: int = 5) -> str:
     )
 
 
+def main():
+    """Entry point for the far-oracle console script."""
+    mcp.run()
+
+
 if __name__ == "__main__":
     # Run the MCP server in stdio mode (for Claude Desktop integration)
-    mcp.run()
+    main()
