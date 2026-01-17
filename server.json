@@ -3,12 +3,12 @@
   "name": "io.github.blueskylineassets/far-mcp-server",
   "title": "FAR Oracle",
   "description": "Search Federal Acquisition Regulations (FAR) for government contracting.",
-  "version": "1.0.1",
+  "version": "1.0.8",
   "packages": [
     {
       "registryType": "pypi",
       "identifier": "far-oracle",
-      "version": "1.0.1",
+      "version": "1.0.8",
       "transport": {
         "type": "stdio"
       }

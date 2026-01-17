@@ -6,7 +6,7 @@ This server allows agents like Claude Desktop, AutoGPT, and CrewAI to perform se
 
 <!-- mcp-name: io.github.blueskylineassets/far-mcp-server -->
 
-![FAR Oracle Demo](https://user-images.githubusercontent.com/12345/far-oracle-demo.gif) <!-- Placeholder for a demo GIF -->
+<!-- Demo GIF coming soon -->
 
 ## Key Features
 
